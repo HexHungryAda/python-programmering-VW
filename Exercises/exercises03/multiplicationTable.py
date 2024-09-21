@@ -6,11 +6,18 @@ print()
 
 table = int(input("Which table are you interested in? "))
 start = int(input("Specify start of table: "))
-end = int(input("Specify when table ends: "))
+endTable = int(input("Specify when table ends: "))
 
-print(f"Your {table}th multiplcation table from {start} to {end}: ", end="")
+print(f"Your {table}th multiplcation table from {start} to {endTable}: ", end="")
 
-for i in range(start,(end*table+1),table):
-    if i % table != 0:
-        print(i,end=" ")
+for i in range(start,(endTable+1),1):
+    print(i*table, end=" ")
 print()
+
+print()
+print()
+
+for i in range(0, 10+1):
+    for j in range(0, 10+1, 1):
+        print(f"{j*i :4}",end=" ")
+    print()
