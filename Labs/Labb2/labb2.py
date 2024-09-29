@@ -52,17 +52,15 @@ with open(filePath, "r") as file:
         numbers = data_parts.strip().replace('(', "").replace(')', "").split(',')
         if len(numbers) == 2:
             try:
-               test_points = tuple(map(float, numbers))
+               test_points.append((float(numbers[0]), float(numbers[1])))
             except ValueError:
                 print(f"Error: line contains incorrect type. Skipped.")
 
-test_array = np.array(test_points) # didnt work for some reason, probably wrong format, I hate that shit.
-# print(test_array)
+test_array = np.array(test_points)
 
 # compare all the distances to point, and output the argmin index.
-test_points_derp = np.array([(25,32), (24.2, 31.5), (22, 34), (20.5, 34)])
 
-for test_point in test_points_derp:
+for test_point in test_array:
 
     shortest_distance = float('inf')
     closest_point_index = None
