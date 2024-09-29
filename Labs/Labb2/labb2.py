@@ -60,7 +60,7 @@ test_array = np.array(test_points)
 
 # compare all the distances to point, and output the argmin index.
 
-for test_point in test_array:
+def classify_pokemon(test_point):
 
     shortest_distance = float('inf')
     closest_point_index = None
@@ -77,3 +77,14 @@ for test_point in test_array:
         print(f"Testpoint {test_point} classified as Pichu")
     else:
         print(f"Testpoint {test_point} classified as Pikachu")
+
+for test_point in test_array:
+    classify_pokemon(test_point)
+
+print("You are entering a 2D testpoint, limited to float numbers e.g (3.14, 24)")
+x = float(input("Enter x coordinate: "))
+y = float(input("Enter y coordinate: "))
+test_point = (x, y) 
+
+classify_pokemon(test_point)
+
