@@ -57,23 +57,25 @@ with open(filePath, "r") as file:
                 print(f"Error: line contains incorrect type. Skipped.")
 
 test_array = np.array(test_points) # didnt work for some reason, probably wrong format, I hate that shit.
-print(test_array)
+# print(test_array)
 
 # compare all the distances to point, and output the argmin index.
-test_point = np.array((0,0))
-shortest_distance = float('inf')
-closest_point_index = None
+test_points_derp = np.array([(25,32), (24.2, 31.5), (22, 34), (20.5, 34)])
 
-for i in range(len(data_array)):
-    distance = np.linalg.norm(data_array[i, :2] - test_point)
-    if distance < shortest_distance:
-        shortest_distance = distance
-        closest_point_index = i
+for test_point in test_points_derp:
 
-closest_point = data_array[closest_point_index]
+    shortest_distance = float('inf')
+    closest_point_index = None
 
-print(f"Closest point to the testpoint is {closest_point}, distance is about {round(shortest_distance, 2)}")
-if closest_point[2] == 0:
-    print("testpoint classified as Pichu")
-else:
-    print("testpoint classified as Pikachu")
+    for i in range(len(data_array)):
+        distance = np.linalg.norm(data_array[i, :2] - test_point)
+        if distance < shortest_distance:
+            shortest_distance = distance
+            closest_point_index = i
+
+    closest_point = data_array[closest_point_index]
+
+    if closest_point[2] == 0:
+        print(f"Testpoint {test_point} classified as Pichu")
+    else:
+        print(f"Testpoint {test_point} classified as Pikachu")
