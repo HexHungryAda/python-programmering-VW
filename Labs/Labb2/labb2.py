@@ -2,25 +2,24 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 
-filePath = "Data/datapoints.txt"
-dataPoints = []
-dimensionLabels = ""
+file_path = "Data/datapoints.txt"
+data_points = []
+dimension_labels = ""
 
-with open(filePath, "r") as file:
-    dimensionLabels = file.readline().strip().split(',')
-    lastLabel = dimensionLabels.pop()
-    dimensionLabels[-1] = dimensionLabels[-1] + "," + lastLabel 
+with open(file_path, "r") as file:
+    dimension_labels = file.readline().strip().split(',')
+    lastLabel = dimension_labels.pop()
+    dimension_labels[-1] = dimension_labels[-1] + "," + lastLabel 
 
     for line in file:
         numbers = line.strip().split(',')
         if len(numbers) == 3:
             try:
-                dataPoints.append((float(numbers[0]), float(numbers[1]), bool(int(numbers[2]))))
+                data_points.append((float(numbers[0]), float(numbers[1]), bool(int(numbers[2]))))
             except ValueError:
                 print(f"Error: line contains incorrect value type. Skipped.")
-                # how do error about specific line number? how deal with this stuff in general? 
 
-data_array = np.array(dataPoints)
+data_array = np.array(data_points)
 
 x_values = data_array[:, 0]
 y_values = data_array[:, 1]
@@ -28,8 +27,8 @@ pokemon_type = data_array[:, 2]
 
 fileName = "pokemon_scatter_plot.png"
 plt.title("Pokemon scatter plot")
-plt.xlabel(dimensionLabels[0])
-plt.ylabel(dimensionLabels[1])
+plt.xlabel(dimension_labels[0])
+plt.ylabel(dimension_labels[1])
 
 red_patch = mpatches.Patch(color="red", label="Pikachu")
 blue_patch = mpatches.Patch(color="blue", label="Pichu")
@@ -41,9 +40,9 @@ plt.savefig(fileName)
 print(f"{fileName} created")
 
 test_points = []
-filePath = "Data/testpoints.txt"
+file_path = "Data/testpoints.txt"
 
-with open(filePath, "r") as file:
+with open(file_path, "r") as file:
     file.readline() #skip the first line.
 
     for line in file:
@@ -57,8 +56,6 @@ with open(filePath, "r") as file:
                 print(f"Error: line contains incorrect type. Skipped.")
 
 test_array = np.array(test_points)
-
-# compare all the distances to point, and output the argmin index.
 
 def classify_pokemon(test_point):
 
@@ -78,8 +75,38 @@ def classify_pokemon(test_point):
     else:
         print(f"Testpoint {test_point} classified as Pikachu")
 
+def classify_pokemon_voting(test_point):
+    distances = np.linalg.norm(data_array[:, :2] - test_point[np.newaxis, :], axis=1) # if not newaxis then get only one value 
+    closest_points = np.zeros((10,2))
+    closest_points[:, 0] = np.inf
+
+    for i, distance in np.ndenumerate(distances):
+        if distance < closest_points[-1, 0]: # get the largest distance.
+            closest_points[-1] = [distance, i[0]] # just i gives eg (0, ) 
+            closest_points = closest_points[closest_points[:, 0].argsort()] # array[indices] to get the sorted array.
+    
+    closest_points = data_array[closest_points[:, 1].astype(int)] # need into or bool indices 
+
+    pikachu_counter = np.count_nonzero(closest_points[:, 2]) # count number of true values i.e pikachu
+
+    print(f"Testpoint {test_point} classified as ", end="")
+    if pikachu_counter > 5:
+        print("Pikachu")
+    elif pikachu_counter == 5:
+        # tie resolved by considering closest point.
+        if closest_points[0, 2] == 0:
+            print("Pichu")
+        else:
+            print("Pikachu")
+    else:
+        print("Pichu")
+
 for test_point in test_array:
     classify_pokemon(test_point)
+
+print("majority voting:")
+for test_point in test_array:
+    classify_pokemon_voting(test_point)
 
 def get_float_input(prompt):
     while True:
@@ -90,7 +117,9 @@ def get_float_input(prompt):
             print("Error: ", e)
 
 print("You are entering a 2D testpoint, limited to float numbers e.g 3.42, 5")
-test_point = (get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")) 
+test_point = np.array((get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")))
 
 classify_pokemon(test_point)
 
+print("majority voting: ")
+classify_pokemon_voting(test_point)
