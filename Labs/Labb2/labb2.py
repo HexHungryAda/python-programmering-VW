@@ -81,10 +81,16 @@ def classify_pokemon(test_point):
 for test_point in test_array:
     classify_pokemon(test_point)
 
-print("You are entering a 2D testpoint, limited to float numbers e.g (3.14, 24)")
-x = float(input("Enter x coordinate: "))
-y = float(input("Enter y coordinate: "))
-test_point = (x, y) 
+def get_float_input(prompt):
+    while True:
+        try:
+            userInput = float(input(prompt))
+            return userInput
+        except ValueError as e:
+            print("Error: ", e)
+
+print("You are entering a 2D testpoint, limited to float numbers e.g 3.42, 5")
+test_point = (get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")) 
 
 classify_pokemon(test_point)
 
