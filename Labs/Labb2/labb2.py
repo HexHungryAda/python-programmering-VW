@@ -11,18 +11,20 @@ def get_float_input(prompt):
             print("Error: ", e)
 
 def classify_pokemon(test_point):
+    # use numpy library to calculate euclidian distance and do majority voting on the 10 closest points.
+    # if tie then closest point is prioritized.
+    
     distances = np.linalg.norm(data_array[:, :2] - test_point[np.newaxis, :], axis=1) # if not newaxis then get only one value 
     closest_points = np.zeros((10,2))
     closest_points[:, 0] = np.inf
 
     for i, distance in np.ndenumerate(distances):
-        if distance < closest_points[-1, 0]: # get the largest distance.
+        if distance < closest_points[-1, 0]: # get the largest saved distance and compare it.
             closest_points[-1] = [distance, i[0]] # just i gives eg (0, ) 
             closest_points = closest_points[closest_points[:, 0].argsort()] # array[indices] to get the sorted array.
     
     closest_points = data_array[closest_points[:, 1].astype(int)] # need into or bool indices 
 
-    # majority voting is used to classify, if tie then closest point is prioritized.
     pikachu_counter = np.count_nonzero(closest_points[:, 2])
 
     print(f"Testpoint {test_point} classified as ", end="")
@@ -36,6 +38,7 @@ def classify_pokemon(test_point):
     else:
         print("Pichu")
 
+#-----------------gettting data from files----------------
 file_path = "Data/datapoints.txt"
 data_points = []
 dimension_labels = ""
@@ -73,6 +76,7 @@ with open(file_path, "r") as file:
 
 test_array = np.array(test_points)
 
+#----------------scatterplot-----------------
 x_values = data_array[:, 0]
 y_values = data_array[:, 1]
 pokemon_type = data_array[:, 2]
@@ -91,6 +95,7 @@ plt.scatter(x_values, y_values, c=pokemon_type, cmap="bwr")
 plt.savefig(file_name)
 print(f"Created file: {file_name}", end="\n\n")
 
+#------------pokemon classification------------
 print("Classifying testpoints from the testpoints file:")
 for test_point in test_array:
     classify_pokemon(test_point)
