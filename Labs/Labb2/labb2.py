@@ -27,7 +27,7 @@ def classify_pokemon(test_point):
 
     pikachu_counter = np.count_nonzero(closest_points[:, 2])
 
-    print(f"Testpoint {test_point} classified as ", end="")
+    print(f"Testpoint {dimension_labels[0]}, {dimension_labels[1]}: {test_point} classified as ", end="")
     if pikachu_counter > 5:
         print("Pikachu")
     elif pikachu_counter == 5:
@@ -47,6 +47,7 @@ with open(file_path, "r") as file:
     dimension_labels = file.readline().strip().split(',')
     lastLabel = dimension_labels.pop()
     dimension_labels[-1] = dimension_labels[-1] + "," + lastLabel 
+    dimension_labels[0] = dimension_labels[0].replace("(", "", 1)
 
     for line in file:
         numbers = line.strip().split(',')
@@ -101,7 +102,7 @@ for test_point in test_array:
     classify_pokemon(test_point)
 print()
 
-print("You are going to enter a 2D testpoint, limited to float numbers e.g 3.42, 5")
+print(f"Enter testpoint coordinates for a pokemon {dimension_labels[0]},{dimension_labels[1]}. Only float allowed e.g 3.5, 5")
 test_point = np.array((get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")))
 
 classify_pokemon(test_point)
