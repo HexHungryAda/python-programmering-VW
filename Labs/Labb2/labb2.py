@@ -25,7 +25,7 @@ x_values = data_array[:, 0]
 y_values = data_array[:, 1]
 pokemon_type = data_array[:, 2]
 
-fileName = "pokemon_scatter_plot.png"
+file_name = "pokemon_scatter_plot.png"
 plt.title("Pokemon scatter plot")
 plt.xlabel(dimension_labels[0])
 plt.ylabel(dimension_labels[1])
@@ -36,8 +36,8 @@ plt.legend(handles=[red_patch, blue_patch])
 
 plt.scatter(x_values, y_values, c=pokemon_type, cmap="bwr")
 
-plt.savefig(fileName)
-print(f"{fileName} created")
+plt.savefig(file_name)
+print(f"{file_name} created")
 
 test_points = []
 file_path = "Data/testpoints.txt"
