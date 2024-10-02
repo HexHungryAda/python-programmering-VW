@@ -70,17 +70,7 @@ with open(file_path, "r") as file:
 
 data_array = np.array(data_points)
 
-pikachu_array = data_array[data_array[:, 2] == 1]
-pichu_array = data_array[data_array[:, 2] == 0]
-np.random.shuffle(pichu_array)
-np.random.shuffle(pikachu_array)
-train_array = np.concatenate((pichu_array[:50, :], pikachu_array[:50, :]))
-test_array = np.concatenate((pichu_array[50:, :], pikachu_array[50:, :]))
-# if not for scatterplot in assignment could detele data_array, train_array is not a view since np.concatenate 
-np.random.shuffle(train_array)
-np.random.shuffle(test_array)
-test_features = test_array[:, :2] # maybe should not be here?
-test_labels = test_array[:, 2]
+train_array = data_array
 
 test_points = []
 file_path = "Data/testpoints.txt"
@@ -118,12 +108,12 @@ plt.scatter(x_values, y_values, c=pokemon_type, cmap="bwr")
 
 plt.savefig(file_name)
 print(f"Created file: {file_name}", end="\n\n")
+plt.clf()
 
 #------------pokemon classification------------
 print("Classifying testpoints from the testpoints file:")
 for test_feature in testfile_array:
     classify_pokemon(test_feature)
-# sometimes differs from assignment output because model uses train_array and not data_array.
 print()
 
 print(f"Enter testpoint coordinates for a pokemon {dimension_labels[0]},{dimension_labels[1]}.\nOnly float allowed e.g 3.5, 5")
@@ -131,9 +121,37 @@ test_feature = np.array((get_float_input("Enter x coordinate: "), get_float_inpu
 classify_pokemon(test_feature)
 print()
 
-accuracy_list = np.empty(len(test_features), dtype=object)
-print("Classifying testpoints extracted randomly from the datapoints file: ")
-for i, (test_feature, test_label) in enumerate(zip(test_features, test_labels)):
-    accuracy_list[i] = classify_pokemon(test_feature, test_label)
-accuracy = np.sum(accuracy_list.astype(bool)) / len(accuracy_list) # assuming no None value bugs 
-print(f"accuracy score: {accuracy}", end="\n\n")
+overall_accuracy = []
+for i in range(10):
+    pikachu_array = data_array[data_array[:, 2] == 1]
+    pichu_array = data_array[data_array[:, 2] == 0]
+    np.random.shuffle(pichu_array)
+    np.random.shuffle(pikachu_array)
+    train_array = np.concatenate((pichu_array[:50, :], pikachu_array[:50, :]))
+    test_array = np.concatenate((pichu_array[50:, :], pikachu_array[50:, :]))
+    np.random.shuffle(train_array)
+    np.random.shuffle(test_array)
+    test_features = test_array[:, :2]
+    test_labels = test_array[:, 2]
+
+    accuracy_array = np.empty(len(test_features), dtype=object)
+
+    print("Classifying testpoints extracted randomly from the datapoints file: ")
+    for i, (test_feature, test_label) in enumerate(zip(test_features, test_labels)):
+        accuracy_array[i] = classify_pokemon(test_feature, test_label)
+    accuracy = np.sum(accuracy_array.astype(bool)) / len(accuracy_array) # assuming no None value bugs 
+    overall_accuracy.append(accuracy)
+    print(f"accuracy score: {accuracy}", end="\n\n")
+
+mean_accuracy = np.mean(overall_accuracy)
+print(f"Average accuracy over 10 runs: {mean_accuracy}")
+
+file_name = 'prediction_accuracy_plot.png'
+plt.title('Accuracy over 10 runs')
+plt.xlabel('Run')
+plt.ylabel('Accuracy')
+plt.ylim(0, 1.02) # slightly above 1 to prevent cut-off if 1.0 score 
+plt.plot(overall_accuracy, marker='o')
+plt.xticks(np.arange(len(overall_accuracy)), np.arange(1, len(overall_accuracy) + 1))
+plt.savefig(file_name)
+print(f"Created file: {file_name}")
