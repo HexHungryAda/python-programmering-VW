@@ -14,7 +14,7 @@ def classify_pokemon(test_point):
     # use numpy library to calculate euclidian distance and do majority voting on the 10 closest points.
     # if tie then closest point is prioritized.
     
-    distances = np.linalg.norm(data_array[:, :2] - test_point[np.newaxis, :], axis=1) # if not newaxis then get only one value 
+    distances = np.linalg.norm(train_array[:, :2] - test_point[np.newaxis, :], axis=1) # if not newaxis then get only one value 
     closest_points = np.zeros((10,2))
     closest_points[:, 0] = np.inf
 
@@ -23,7 +23,7 @@ def classify_pokemon(test_point):
             closest_points[-1] = [distance, i[0]] # just i gives eg (0, ) 
             closest_points = closest_points[closest_points[:, 0].argsort()] # array[indices] to get the sorted array.
     
-    closest_points = data_array[closest_points[:, 1].astype(int)] # need into or bool indices 
+    closest_points = train_array[closest_points[:, 1].astype(int)] # need into or bool indices 
 
     pikachu_counter = np.count_nonzero(closest_points[:, 2])
 
@@ -59,6 +59,18 @@ with open(file_path, "r") as file:
 
 data_array = np.array(data_points)
 
+pikachu_array = data_array[data_array[:, 2] == 1]
+pichu_array = data_array[data_array[:, 2] == 0]
+np.random.shuffle(pichu_array)
+np.random.shuffle(pikachu_array)
+train_array = np.concatenate((pichu_array[:50, :], pikachu_array[:50, :]))
+test_array = np.concatenate((pichu_array[50:, :], pikachu_array[50:, :]))
+# if not for scatterplot in assignment could detele data_array, train_array is not a view since np.concatenate 
+np.random.shuffle(train_array)
+np.random.shuffle(test_array)
+test_features = test_array[:, :2] # maybe should not be here?
+test_labels = test_array[:, 2]
+
 test_points = []
 file_path = "Data/testpoints.txt"
 
@@ -75,7 +87,7 @@ with open(file_path, "r") as file:
             except ValueError:
                 print(f"Error: line contains incorrect type. Skipped.")
 
-test_array = np.array(test_points)
+testfile_array = np.array(test_points)
 
 #----------------scatterplot-----------------
 x_values = data_array[:, 0]
@@ -98,11 +110,16 @@ print(f"Created file: {file_name}", end="\n\n")
 
 #------------pokemon classification------------
 print("Classifying testpoints from the testpoints file:")
-for test_point in test_array:
+for test_point in testfile_array:
     classify_pokemon(test_point)
 print()
 
-print(f"Enter testpoint coordinates for a pokemon {dimension_labels[0]},{dimension_labels[1]}. Only float allowed e.g 3.5, 5")
+print("Classifying testpoints extracted randomly from the datapoints file: ")
+for test_point in test_features:
+    classify_pokemon(test_point)
+print()
+
+print(f"Enter testpoint coordinates for a pokemon {dimension_labels[0]},{dimension_labels[1]}.\nOnly float allowed e.g 3.5, 5")
 test_point = np.array((get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")))
 
 classify_pokemon(test_point)
