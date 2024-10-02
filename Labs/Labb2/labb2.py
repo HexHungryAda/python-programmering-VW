@@ -151,10 +151,9 @@ plt.ylim(0, 1.02) # slightly above 1 to prevent cut-off if 1.0 score
 plt.plot(overall_accuracy, marker='o')
 plt.xticks(np.arange(len(overall_accuracy)), np.arange(1, len(overall_accuracy) + 1))
 plt.savefig(file_name)
-print(f"Created file: {file_name}")
+print(f"Created file: {file_name}", end="\n\n")
 
 
 print(f"Enter testpoint coordinates for a pokemon {dimension_labels[0]},{dimension_labels[1]}.\nOnly float allowed e.g 3.5, 5")
 test_feature = np.array((get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")))
 classify_pokemon(test_feature)
-print()
