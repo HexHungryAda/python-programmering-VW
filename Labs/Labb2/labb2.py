@@ -17,7 +17,7 @@ def classify_pokemon(test_feature, test_label=None):
      
     prediction = None
     distances = np.linalg.norm(train_array[:, :2] - test_feature[np.newaxis, :], axis=1) # if not newaxis then get only one value 
-    closest_points = np.zeros((10,2))
+    closest_points = np.zeros((10, 2))
     closest_points[:, 0] = np.inf
 
     for i, distance in np.ndenumerate(distances):
@@ -116,10 +116,6 @@ for test_feature in testfile_array:
     classify_pokemon(test_feature)
 print()
 
-print(f"Enter testpoint coordinates for a pokemon {dimension_labels[0]},{dimension_labels[1]}.\nOnly float allowed e.g 3.5, 5")
-test_feature = np.array((get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")))
-classify_pokemon(test_feature)
-print()
 
 overall_accuracy = []
 for i in range(10):
@@ -146,6 +142,7 @@ for i in range(10):
 mean_accuracy = np.mean(overall_accuracy)
 print(f"Average accuracy over 10 runs: {mean_accuracy}")
 
+
 file_name = 'prediction_accuracy_plot.png'
 plt.title('Accuracy over 10 runs')
 plt.xlabel('Run')
@@ -155,3 +152,9 @@ plt.plot(overall_accuracy, marker='o')
 plt.xticks(np.arange(len(overall_accuracy)), np.arange(1, len(overall_accuracy) + 1))
 plt.savefig(file_name)
 print(f"Created file: {file_name}")
+
+
+print(f"Enter testpoint coordinates for a pokemon {dimension_labels[0]},{dimension_labels[1]}.\nOnly float allowed e.g 3.5, 5")
+test_feature = np.array((get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")))
+classify_pokemon(test_feature)
+print()
