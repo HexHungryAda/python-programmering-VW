@@ -10,11 +10,13 @@ def get_float_input(prompt):
         except ValueError as e:
             print("Error: ", e)
 
-def classify_pokemon(test_point):
+def classify_pokemon(test_feature, test_label=None):
     # use numpy library to calculate euclidian distance and do majority voting on the 10 closest points.
     # if tie then closest point is prioritized.
-    
-    distances = np.linalg.norm(train_array[:, :2] - test_point[np.newaxis, :], axis=1) # if not newaxis then get only one value 
+    # also returns np.bool if prediction matches test_label. if no label None.
+     
+    prediction = None
+    distances = np.linalg.norm(train_array[:, :2] - test_feature[np.newaxis, :], axis=1) # if not newaxis then get only one value 
     closest_points = np.zeros((10,2))
     closest_points[:, 0] = np.inf
 
@@ -27,16 +29,25 @@ def classify_pokemon(test_point):
 
     pikachu_counter = np.count_nonzero(closest_points[:, 2])
 
-    print(f"Testpoint {dimension_labels[0]}, {dimension_labels[1]}: {test_point} classified as ", end="")
+    print(f"Testpoint {dimension_labels[0]}, {dimension_labels[1]}: {test_feature} classified as ", end="")
     if pikachu_counter > 5:
         print("Pikachu")
+        prediction = True
     elif pikachu_counter == 5:
         if closest_points[0, 2] == 0:
             print("Pichu")
+            prediction = False
         else:
             print("Pikachu")
+            prediction = True
     else:
         print("Pichu")
+        prediction = False
+
+    if test_label is not None:
+        return prediction == test_label 
+    else:
+        return None
 
 #-----------------gettting data from files----------------
 file_path = "Data/datapoints.txt"
@@ -110,16 +121,19 @@ print(f"Created file: {file_name}", end="\n\n")
 
 #------------pokemon classification------------
 print("Classifying testpoints from the testpoints file:")
-for test_point in testfile_array:
-    classify_pokemon(test_point)
-print()
-
-print("Classifying testpoints extracted randomly from the datapoints file: ")
-for test_point in test_features:
-    classify_pokemon(test_point)
+for test_feature in testfile_array:
+    classify_pokemon(test_feature)
+# sometimes differs from assignment output because model uses train_array and not data_array.
 print()
 
 print(f"Enter testpoint coordinates for a pokemon {dimension_labels[0]},{dimension_labels[1]}.\nOnly float allowed e.g 3.5, 5")
-test_point = np.array((get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")))
+test_feature = np.array((get_float_input("Enter x coordinate: "), get_float_input("Enter y coordinate: ")))
+classify_pokemon(test_feature)
+print()
 
-classify_pokemon(test_point)
+accuracy_list = np.empty(len(test_features), dtype=object)
+print("Classifying testpoints extracted randomly from the datapoints file: ")
+for i, (test_feature, test_label) in enumerate(zip(test_features, test_labels)):
+    accuracy_list[i] = classify_pokemon(test_feature, test_label)
+accuracy = np.sum(accuracy_list.astype(bool)) / len(accuracy_list) # assuming no None value bugs 
+print(f"accuracy score: {accuracy}", end="\n\n")
